@@ -9,10 +9,6 @@ To start the server, run:
 ```bash
 ng serve
 ```
-and 
-```bash
-python -m uvicorn main:app --reload
-```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. 
 
