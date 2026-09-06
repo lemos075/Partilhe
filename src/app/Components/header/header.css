@@ -1,0 +1,99 @@
+.headermain {
+    margin: 12px auto;
+    max-width: 1200px;
+    width: 94%;
+    padding: 0 25px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    height: 70px;
+    top: 10px;
+    position: sticky;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.imglogoHEADER {
+    width: 9rem;
+    height: auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.btnHEADER {
+    border: none;
+    background-color: #63a567;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btnHEADER:hover {
+    color: white;
+    background-color: green;
+    transition: 0.3s;
+}
+
+.loginHEADERArea {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.loginImg {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.btnHEADERLogin {
+    border: none;
+    background-color: #63a567;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btnHEADERLogin:hover {
+    color: white;
+    background-color: green;
+    transition: 0.3s;
+}
+
+@media (max-width: 768px) {
+    .headermain {
+        width: 96%;
+        padding: 0 15px;
+        height: 60px;
+    }
+    .imglogoHEADER {
+        width: 7rem;
+    }
+    .nav-links {
+        display: none;
+    }
+    .btnHEADERLogin {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}

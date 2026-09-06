@@ -1,0 +1,58 @@
+<section class="userpage-container">
+  @if (usuario) {
+    <div class="userpage-card">
+      <div class="userpage-header">
+        <div>
+          <h1>Olá, <span class="highlight">{{ usuario.nome_responsavel }}</span>!</h1>
+          <p class="subtitle">Bem-vindo(a) ao seu painel no <strong>Partilhe+</strong></p>
+        </div>
+        <span class="badge" [class.badge-produtor]="usuario.tipo_usuario === 'PRODUTOR'" [class.badge-ong]="usuario.tipo_usuario === 'ONG'">
+          {{ usuario.tipo_usuario === 'PRODUTOR' ? 'Produtor Rural / Empresa' : 'Organização (ONG)' }}
+        </span>
+      </div>
+
+      <div class="user-info-grid">
+        <div class="info-card">
+          <h3>Empresa / Organização</h3>
+          <p>{{ usuario.nome_empresa }}</p>
+        </div>
+        <div class="info-card">
+          <h3>E-mail de Contato</h3>
+          <p>{{ usuario.email }}</p>
+        </div>
+        <div class="info-card">
+          <h3>Identificação</h3>
+          <p>ID #{{ usuario.id }}</p>
+        </div>
+      </div>
+
+      <div class="actions-section">
+        <h2>Ações Rápidas</h2>
+        <div class="actions-grid">
+          @if (usuario.tipo_usuario === 'PRODUTOR') {
+            <button class="action-btn primary" routerLink="/">Nova Doação</button>
+            <button class="action-btn secondary" routerLink="/">Minhas Doações</button>
+            <button class="action-btn secondary" routerLink="/">Localidades Parceiras</button>
+          } @else {
+            <button class="action-btn primary" routerLink="/">Buscar Alimentos Disponíveis</button>
+            <button class="action-btn secondary" routerLink="/">Solicitações em Aberto</button>
+            <button class="action-btn secondary" routerLink="/">Histórico de Recebimento</button>
+          }
+        </div>
+      </div>
+
+      <div class="userpage-footer">
+        <button class="logout-btn" (click)="logout()">Sair da Conta</button>
+      </div>
+    </div>
+  } @else {
+    <div class="userpage-card not-logged">
+      <h2>Você ainda não está autenticado</h2>
+      <p>Faça login ou crie sua conta para acessar todas as funcionalidades do projeto Partilhe+.</p>
+      <div class="not-logged-actions">
+        <a routerLink="/login" class="action-btn primary">Fazer Login</a>
+        <a routerLink="/register" class="action-btn secondary">Criar Conta</a>
+      </div>
+    </div>
+  }
+</section>

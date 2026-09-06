@@ -1,0 +1,13 @@
+.MainPageFooter {
+    background-color: #63a567;
+padding: 23px 0px 22px 0px;
+    text-align: center;
+    width: 100%;
+    margin: 0; /* Tiramos as margens negativas */
+}
+
+p {
+    font-size: medium;
+    font-weight: 600;
+    margin: 0;
+}

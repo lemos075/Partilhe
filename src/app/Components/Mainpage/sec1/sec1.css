@@ -1,0 +1,71 @@
+
+.divMainPage{
+margin: -80px -8px;
+}
+.divBannerMainPage{
+width: stretch;
+}
+
+.sectionMainPage{
+display: flex;
+    align-content: space-around;
+    justify-content: space-around;
+    flex-direction: column;
+    margin: -30rem 0 0;
+    padding: 10px 12rem;
+    flex-wrap: wrap;
+    align-items: center;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+.h1Section1{
+color: white;
+    font-style: normal;
+}
+
+span{
+color: #63a567;
+    font-style: normal;
+}
+
+.pSectionMainPage{
+color: white;
+    text-align: center;
+    font-size: 15px;
+}
+
+.lineMainPageSection{
+font-size: 0.1px;
+    background-color: white;
+    border: none;
+    width: 55rem;
+}
+
+.btnMainPageSection{
+border-width: 3px;
+    border-color: white;
+    border-radius: 5px;
+    background-color: transparent;
+    width: 10rem;
+    height: 4rem;
+    color: white;
+    transition: 0.5s;
+    border-style: solid;
+}
+
+.btnMainPageSection:hover{
+    transition: 0.5s;
+    transform: scale(1.05);
+    border-color:#63a567;
+    background-color: white;
+    color: black;
+    border-width: 4px;
+    border-style:solid;
+}
+
+@media (max-width: 768px) {
+  .sectionMainPage {
+    margin-top: -15rem;
+  }
+}
