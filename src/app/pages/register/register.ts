@@ -11,7 +11,7 @@ function passwordMatchValidator(control: AbstractControl) {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule], // <-- 1. Adicionado o ReactiveFormsModule aqui!
+  imports: [RouterLink, ReactiveFormsModule],
   selector: 'app-register',
   styleUrl: './register.css',
   template: `
@@ -32,97 +32,144 @@ function passwordMatchValidator(control: AbstractControl) {
       </div>
     }
 
-    <!-- TELA 2: FORMULÁRIO ÚNICO (ONG E PRODUTOR) -->
+    <!-- FORMULÁRIO PRINCIPAL (Envolve tanto Dados quanto Endereço) -->
     @if (step !== 'selecao') {
       <div class="form-container">
         <h1>Cadastro</h1>
-        <!-- O título muda dinamicamente -->
-        <h2>Seja <span class="highlight">bem-vindo(a), {{ step === 'produtor' ? 'produtor' : 'ONG' }}!</span></h2>
+        
+        <h2>Seja <span class="highlight">bem-vindo(a), {{ perfilSelecionado === 'produtor' ? 'produtor' : 'ONG' }}!</span></h2>
 
-        <!-- 2. Trocamos o action padrão pelo ngSubmit e ligamos o formGroup -->
         <form [formGroup]="cadastroForm" (ngSubmit)="enviarCadastro()">
           
-          <div class="form-row">
-            <div class="input-group flex-70">
-              <label>Nome do Responsável *</label>
-              <!-- 3. Adicionado formControlName a TODOS os inputs -->
-              <input type="text" formControlName="nome_responsavel" placeholder="Nome do responsável">
+          <!-- PARTE 1: DADOS PESSOAIS E DA EMPRESA -->
+          @if (step === 'ong' || step === 'produtor') {
+            <div class="form-row">
+              <div class="input-group flex-70">
+                <label>Nome do Responsável *</label>
+                <input type="text" formControlName="nome_responsavel" placeholder="Nome do responsável">
+              </div>
+              <div class="input-group flex-30">
+                <label>Data de Nascimento *</label>
+                <input type="date" formControlName="data_nascimento">
+              </div>
             </div>
-            <div class="input-group flex-30">
-              <label>Data de Nascimento *</label>
-              <input type="date" formControlName="data_nascimento">
-            </div>
-          </div>
 
-          <div class="form-row">
-            <div class="input-group flex-60">
-              <label>E-mail *</label>
-              <input type="email" formControlName="email" placeholder="email@email.com">
+            <div class="form-row">
+              <div class="input-group flex-60">
+                <label>E-mail *</label>
+                <input type="email" formControlName="email" placeholder="email@email.com">
+              </div>
+              <div class="input-group flex-40">
+                <label>Telefone</label>
+                <input type="tel" formControlName="telefone" placeholder="11 12345-6789">
+              </div>
             </div>
-            <div class="input-group flex-40">
-              <label>Telefone</label>
-              <input type="tel" formControlName="telefone" placeholder="11 12345-6789">
+
+            <div class="form-row">
+              <div class="input-group flex-50">
+                <label>CNPJ *</label>
+                <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00">
+              </div>
+              <div class="input-group flex-50">
+                <label>CPF *</label>
+                <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+              </div>
             </div>
-          </div>
 
-          <div class="form-row">
-            <div class="input-group flex-50">
-              <label>CNPJ *</label>
-              <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00">
-            </div>
-            <div class="input-group flex-50">
-              <label>CPF *</label>
-              <input type="text" formControlName="cpf" placeholder="000.000.000-00">
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label>Nome da empresa *</label>
-            <input type="text" formControlName="nome_empresa" placeholder="Nome da organização">
-          </div>
-
-          <div class="input-group">
-            <label>Foto com documento (RG/CPF) *</label>
-            <!-- A foto não usa formControlName, ela é pega pelo evento (change) -->
-            <input type="file" accept="image/*" (change)="onFileSelected($event)">
-          </div>
-
-          <!-- CAMPO CONDICIONAL: Só aparece se for produtor -->
-          @if (step === 'produtor') {
             <div class="input-group">
-              <label>Descrição *</label>
-              <input type="text" formControlName="descricao" placeholder="Nos dê uma breve descrição da sua empresa">
+              <label>Nome da empresa *</label>
+              <input type="text" formControlName="nome_empresa" placeholder="Nome da organização">
+            </div>
+
+            <div class="input-group">
+              <label>Foto com documento (RG/CPF) *</label>
+              <input type="file" accept="image/*" (change)="onFileSelected($event)">
+            </div>
+
+            @if (perfilSelecionado === 'produtor') {
+              <div class="input-group">
+                <label>Descrição *</label>
+                <input type="text" formControlName="descricao" placeholder="Nos dê uma breve descrição da sua empresa">
+              </div>
+            }
+
+            <p style="margin-top: 15px; font-weight: bold; color: #333;">Crie uma Senha</p>
+
+            <div class="form-row">
+              <div class="input-group flex-50">
+                <label>Senha *</label>
+                <input type="password" formControlName="senha" placeholder="Senha (mínimo 4 caracteres)">
+              </div>
+              <div class="input-group flex-50">
+                <label>Confirmação de senha *</label>
+                <input type="password" formControlName="confirmacao_senha" placeholder="Confirme sua senha">
+              </div>
+            </div>
+
+            @if (cadastroForm.hasError('senhaDivergente') && (cadastroForm.get('confirmacao_senha')?.touched || cadastroForm.get('senha')?.touched)) {
+              <p style="color: #e53935; font-size: 13px; margin-top: -5px; font-weight: 500;">
+                As senhas digitadas não coincidem.
+              </p>
+            }
+
+            <!-- Botão type="button" para não disparar o envio do form ainda -->
+            <button type="button" class="btn-submit" (click)="irParaEndereco()">
+              Continuar
+            </button>
+
+            <div class="footer-links">
+              <p><a href="javascript:void(0)" (click)="voltarSelecao()">← Voltar para seleção</a></p>
+              <p>Já tem uma conta? <a routerLink="/login">Fazer login</a></p>
             </div>
           }
 
-          <p style="margin-top: 15px; font-weight: bold; color: #333;">Crie uma Senha</p>
+          <!-- PARTE 2: ENDEREÇO -->
+          @if (step === 'endereco') {
+            <p style="margin-bottom: 15px; font-weight: bold; color: #333;">Dados de Endereço</p>
 
-          <div class="form-row">
-            <div class="input-group flex-50">
-              <label>Senha *</label>
-              <input type="password" formControlName="senha" placeholder="Senha (mínimo 4 caracteres)">
+            <div class="form-row">
+              <div class="input-group flex-30">
+                <label>CEP *</label>
+                <input type="text" formControlName="cep" placeholder="00000-000" (blur)="buscarCep()">
+              </div>
+              <div class="input-group flex-70">
+                <label>Logradouro *</label>
+                <input type="text" formControlName="logradouro" placeholder="Ex: Rua das Flores">
+              </div>
             </div>
-            <div class="input-group flex-50">
-              <label>Confirmação de senha *</label>
-              <input type="password" formControlName="confirmacao_senha" placeholder="Confirme sua senha">
-            </div>
-          </div>
 
-          @if (cadastroForm.hasError('senhaDivergente') && (cadastroForm.get('confirmacao_senha')?.touched || cadastroForm.get('senha')?.touched)) {
-            <p style="color: #e53935; font-size: 13px; margin-top: -5px; font-weight: 500;">
-              As senhas digitadas não coincidem.
-            </p>
+            <div class="form-row">
+              <div class="input-group flex-30">
+                <label>Número *</label>
+                <input type="text" formControlName="numero" placeholder="123">
+              </div>
+              <div class="input-group flex-70">
+                <label>Bairro *</label>
+                <input type="text" formControlName="bairro" placeholder="Seu Bairro">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="input-group flex-70">
+                <label>Cidade *</label>
+                <input type="text" formControlName="cidade" placeholder="Sua Cidade">
+              </div>
+              <div class="input-group flex-30">
+                <label>Estado *</label>
+                <input type="text" formControlName="estado" placeholder="UF" maxlength="2">
+              </div>
+            </div>
+
+            <!-- Este botão simula o submit final da página -->
+            <button type="submit" class="btn-submit" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'Cadastrando...' : 'Finalizar Cadastro' }}
+            </button>
+
+            <div class="footer-links">
+              <p><a href="javascript:void(0)" (click)="voltarParaDados()">← Voltar para dados iniciais</a></p>
+            </div>
           }
 
-          <!-- O botão agora apenas dispara o submit do form inteiro -->
-          <button type="submit" class="btn-submit" [disabled]="isSubmitting">
-            {{ isSubmitting ? 'Cadastrando...' : 'Continuar' }}
-          </button>
-
-          <div class="footer-links">
-            <p><a href="javascript:void(0)" (click)="voltar()">← Voltar para seleção</a></p>
-            <p>Já tem uma conta? <a routerLink="/login">Fazer login</a></p>
-          </div>
         </form>
       </div>
     }
@@ -130,7 +177,9 @@ function passwordMatchValidator(control: AbstractControl) {
 })
 export class registerComponent implements OnInit {
   
-  step: 'selecao' | 'ong' | 'produtor' = 'selecao';
+  // Adicionado o estado 'endereco'
+  step: 'selecao' | 'ong' | 'produtor' | 'endereco' = 'selecao';
+  perfilSelecionado: 'ong' | 'produtor' | null = null; // Guarda o perfil escolhido
 
   cadastroForm!: FormGroup;
   arquivoSelecionado: File | null = null;
@@ -144,6 +193,7 @@ export class registerComponent implements OnInit {
 
   ngOnInit(): void {
     this.cadastroForm = this.fb.group({
+      // Dados iniciais
       nome_responsavel: ['', Validators.required],
       data_nascimento: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -153,11 +203,20 @@ export class registerComponent implements OnInit {
       telefone: [''],
       descricao: [''],
       senha: ['', [Validators.required, Validators.minLength(4)]],
-      confirmacao_senha: ['', Validators.required]
+      confirmacao_senha: ['', Validators.required],
+      
+      // Novos campos de endereço baseados no banco MySQL
+      cep: ['', Validators.required],
+      logradouro: ['', Validators.required],
+      numero: ['', Validators.required],
+      bairro: ['', Validators.required],
+      cidade: ['', Validators.required],
+      estado: ['', [Validators.required, Validators.maxLength(2)]]
     }, { validators: passwordMatchValidator });
   }
 
   escolherPerfil(perfil: 'ong' | 'produtor') {
+    this.perfilSelecionado = perfil;
     this.step = perfil;
     
     if (perfil === 'produtor') {
@@ -168,22 +227,75 @@ export class registerComponent implements OnInit {
     this.cadastroForm.get('descricao')?.updateValueAndValidity();
   }
 
-  voltar() {
+  voltarSelecao() {
     this.step = 'selecao';
+    this.perfilSelecionado = null;
   }
+
+  voltarParaDados() {
+    if (this.perfilSelecionado) {
+      this.step = this.perfilSelecionado;
+    }
+  }
+
+  irParaEndereco() {
+    if (this.cadastroForm.hasError('senhaDivergente')) {
+      alert('As senhas digitadas não coincidem. Por favor, verifique.');
+      return;
+    }
+
+    // Valida apenas se o arquivo foi anexado (a validação dos campos será feita no submit final, 
+    // mas você pode expandir aqui para validar apenas os campos do passo 1 se desejar).
+    if (!this.arquivoSelecionado) {
+      alert('Por favor, envie a foto do documento antes de continuar.');
+      return;
+    }
+
+    this.step = 'endereco';
+  }
+
+buscarCep() {
+    // 1. Pega o valor do form e usa Regex para remover tudo que não for número
+    const cep = this.cadastroForm.get('cep')?.value?.replace(/\D/g, '');
+
+    // 2. Verifica se o campo não está vazio e tem exatamente 8 dígitos
+    if (cep && cep.length === 8) {
+      this.http.get(`https://viacep.com.br/ws/${cep}/json/`).subscribe({
+        next: (dados: any) => {
+          if (!dados.erro) {
+            // 3. Preenche os campos automaticamente. 
+            // Nota: O ViaCEP chama cidade de "localidade" e estado de "uf"
+            this.cadastroForm.patchValue({
+              logradouro: dados.logradouro,
+              bairro: dados.bairro,
+              cidade: dados.localidade,
+              estado: dados.uf
+            });
+            
+            // Opcional: Se quiser focar no campo de número após preencher o endereço,
+            // você pode usar ViewChild ou simplesmente deixar o usuário seguir o fluxo natural.
+          } else {
+            alert('CEP não encontrado. Por favor, verifique o número digitado.');
+          }
+        },
+        error: (err) => {
+          console.error('Erro na requisição da API de CEP:', err);
+          alert('Erro ao buscar o CEP. O serviço pode estar temporariamente indisponível.');
+        }
+      });
+    } else if (cep && cep.length !== 8) {
+      alert('Formato de CEP inválido. Digite os 8 números.');
+    }
+  }
+
 
   onFileSelected(event: any) {
     this.arquivoSelecionado = event.target.files[0];
   }
 
   enviarCadastro() {
-    if (this.cadastroForm.hasError('senhaDivergente')) {
-      alert('As senhas digitadas não coincidem. Por favor, verifique.');
-      return;
-    }
-
     if (this.cadastroForm.invalid || !this.arquivoSelecionado) {
-      alert('Por favor, preencha todos os campos obrigatórios e envie a foto do documento.');
+      alert('Por favor, preencha todos os campos obrigatórios em ambas as etapas.');
       return;
     }
 
@@ -193,7 +305,9 @@ export class registerComponent implements OnInit {
     
     const dados = { ...this.cadastroForm.value };
     delete dados.confirmacao_senha;
-    formData.append('tipo_usuario', this.step.toUpperCase());
+    
+    // Usamos perfilSelecionado porque step agora é 'endereco'
+    formData.append('tipo_usuario', (this.perfilSelecionado || '').toUpperCase());
     
     for (const key in dados) {
       if (dados[key] !== null && dados[key] !== undefined) {
@@ -205,7 +319,7 @@ export class registerComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.isSubmitting = false;
-          alert('Cadastro realizado com sucesso! Redirecionando para a tela de login...');
+          alert('Cadastro e endereço realizados com sucesso! Redirecionando para login...');
           this.router.navigate(['/login']);
         },
         error: (err) => {
