@@ -1,4 +1,4 @@
-<section class="userpage-container">
+﻿<section class="userpage-container">
   @if (usuario) {
     <div class="userpage-card">
       <div class="userpage-header">
@@ -7,7 +7,7 @@
           <p class="subtitle">Bem-vindo(a) ao seu painel no <strong>Partilhe+</strong></p>
         </div>
         <span class="badge" [class.badge-produtor]="usuario.tipo_usuario === 'PRODUTOR'" [class.badge-ong]="usuario.tipo_usuario === 'ONG'">
-          {{ usuario.tipo_usuario === 'PRODUTOR' ? 'Produtor Rural / Empresa' : 'Organização (ONG)' }}
+          {{ usuario.tipo_usuario === 'PRODUTOR' ? 'Doador / Empresa' : 'Organização (ONG)' }}
         </span>
       </div>
 
@@ -30,14 +30,14 @@
         <h2>Ações Rápidas</h2>
         <div class="actions-grid">
           @if (usuario.tipo_usuario === 'PRODUTOR') {
-            <button class="action-btn primary" routerLink="/">Nova Doação</button>
-            <button class="action-btn secondary" routerLink="/">Minhas Doações</button>
+            <button class="action-btn primary" (click)="abrirModalNovaDoacao()">Nova Doação</button>
+            <button class="action-btn secondary" (click)="toggleMinhasDoacoes()">Minhas Doações</button>
             <button class="action-btn secondary" routerLink="/">Localidades Parceiras</button>
-          } @else {
+          } 
             <button class="action-btn primary" routerLink="/">Buscar Alimentos Disponíveis</button>
             <button class="action-btn secondary" routerLink="/">Solicitações em Aberto</button>
             <button class="action-btn secondary" routerLink="/">Histórico de Recebimento</button>
-          }
+          
         </div>
       </div>
 
@@ -52,6 +52,118 @@
       <div class="not-logged-actions">
         <a routerLink="/login" class="action-btn primary">Fazer Login</a>
         <a routerLink="/register" class="action-btn secondary">Criar Conta</a>
+      </div>
+    </div>
+  }
+
+  @if (showModalDoacao) {
+  <div class="modal-container">
+    <div class="modal">
+      <div class="modal__header">
+        <span class="modal__title">Nova doação</span>
+        <button class="button button--icon" (click)="fecharModalNovaDoacao()">
+          <svg width="24" viewBox="0 0 24 24" height="24" xmlns="http://www.w3.org/2000/svg">
+            <path fill="none" d="M0 0h24v24H0V0z"></path>
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="input">
+          <label class="input__label">Nome da doação</label>
+          <input class="input__field" type="text" placeholder="Ex: Cesta Básica" #nomeInput> 
+          <p class="input__description">Insira um título curto para sua doação.</p>
+        </div>
+        <div class="input">
+          <label class="input__label">Descrição (Opcional)</label>
+          <textarea class="input__field input__field--textarea" placeholder="Descreva os itens ou detalhes" #descInput></textarea>
+          <p class="input__description">Dê uma boa descrição para que saibam o que está doando.</p>
+        </div>
+        <div class="input">
+          <label class="input__label">Imagem da doação</label>
+          <input class="input__field" type="file" accept="image/*" (change)="onFileSelected($event)"> 
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="button button--primary" (click)="salvarDoacao(nomeInput.value, descInput.value)" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Salvando...' : 'Criar doação' }}
+        </button>
+      </div>
+     </div>
+  </div>
+  }
+
+  @if (showMinhasDoacoes) {
+    <div class="userpage-card" style="margin-top: 20px;">
+      <h2>Minhas Doações</h2>
+      @if (minhasDoacoes.length === 0) {
+        <p style="color: #666; margin-top: 10px;">Você ainda não possui doações ou elas estão sendo carregadas.</p>
+      }
+      <div class="minhas-doacoes-grid">
+        @for (doacao of minhasDoacoes; track doacao.iddoacoes) {
+          <div class="main">
+            <div class="card" [style.backgroundImage]="'url(' + doacao.foto_doacao_path + ')'" style="background-size: cover; background-position: center;">
+              <div class="fl">
+                <div class="fullscreen" (click)="abrirDetalhesDoacao(doacao)">
+                  <svg viewBox="0 0 100 100" class="fullscreen_svg"><path d="M3.563-.004a3.573 3.573 0 0 0-3.527 4.09l-.004-.02v28.141c0 1.973 1.602 3.57 3.57 3.57s3.57-1.598 3.57-3.57V12.218v.004l22.461 22.461a3.571 3.571 0 0 0 6.093-2.527c0-.988-.398-1.879-1.047-2.523L12.218 7.172h19.989c1.973 0 3.57-1.602 3.57-3.57s-1.598-3.57-3.57-3.57H4.035a3.008 3.008 0 0 0-.473-.035zM96.333 0l-.398.035.02-.004h-28.16a3.569 3.569 0 0 0-3.57 3.57 3.569 3.569 0 0 0 3.57 3.57h19.989L65.323 29.632a3.555 3.555 0 0 0-1.047 2.523 3.571 3.571 0 0 0 6.093 2.527L92.83 12.221v19.985a3.569 3.569 0 0 0 3.57 3.57 3.569 3.569 0 0 0 3.57-3.57V4.034v.004a3.569 3.569 0 0 0-3.539-4.043l-.105.004zM3.548 64.23A3.573 3.573 0 0 0 .029 67.8v28.626-.004l.016.305-.004-.016.004.059v-.012l.039.289-.004-.023.023.121-.004-.023c.074.348.191.656.34.938l-.008-.02.055.098-.008-.02.148.242-.008-.012.055.082-.008-.012c.199.285.43.531.688.742l.008.008.031.027.004.004c.582.461 1.32.742 2.121.762h.004l.078.004h28.61a3.569 3.569 0 0 0 3.57-3.57 3.569 3.569 0 0 0-3.57-3.57H12.224l22.461-22.461a3.569 3.569 0 0 0-2.492-6.125l-.105.004h.008a3.562 3.562 0 0 0-2.453 1.074L7.182 87.778V67.793a3.571 3.571 0 0 0-3.57-3.57h-.055.004zm92.805 0a3.573 3.573 0 0 0-3.519 3.57v19.993-.004L70.373 65.328a3.553 3.553 0 0 0-2.559-1.082h-.004a3.573 3.573 0 0 0-3.566 3.57c0 1.004.414 1.91 1.082 2.555l22.461 22.461H67.802a3.57 3.57 0 1 0 0 7.14h28.606c.375 0 .742-.059 1.082-.168l-.023.008.027-.012-.02.008.352-.129-.023.008.039-.02-.02.008.32-.156-.02.008.023-.016-.008.008c.184-.102.34-.207.488-.32l-.008.008.137-.113-.008.004.223-.211.008-.008c.156-.164.301-.34.422-.535l.008-.016-.008.016.008-.02.164-.285.008-.02-.008.016.008-.02c.098-.188.184-.406.246-.633l.008-.023-.004.008.008-.023a3.44 3.44 0 0 0 .121-.852v-.004l.004-.078V67.804a3.569 3.569 0 0 0-3.57-3.57h-.055.004z"></path></svg>
+                </div>
+              </div>
+              <div class="card_back"></div>
+            </div>
+            <div class="data">
+              <div class="text">
+                <div class="text_m">{{ doacao.doacaonome }}</div>
+                <div class="text_s">{{ usuario?.nome_empresa }}</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (doacaoSelecionada) {
+    <div class="modal-container">
+      <div class="modal">
+        <div class="modal__header">
+          <span class="modal__title">Detalhes da Doação</span>
+          <button class="button button--icon" (click)="fecharDetalhesDoacao()">
+            <svg width="24" viewBox="0 0 24 24" height="24" xmlns="http://www.w3.org/2000/svg">
+              <path fill="none" d="M0 0h24v24H0V0z"></path>
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="modal__body modal-details-body">
+          <img [src]="doacaoSelecionada.foto_doacao_path" alt="Doação" class="modal-details-img">
+          
+          <div class="modal-info-item">
+            <span class="modal-info-label">Nome da Doação</span>
+            <span class="modal-info-value">{{ doacaoSelecionada.doacaonome }}</span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="modal-info-label">Quem postou (Empresa)</span>
+            <span class="modal-info-value">{{ usuario?.nome_empresa }}</span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="modal-info-label">Data de Postagem</span>
+            <span class="modal-info-value">{{ doacaoSelecionada.criado_em | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="modal-info-label">Localização</span>
+            <span class="modal-info-value">
+              {{ doacaoSelecionada.logradouro ? (doacaoSelecionada.logradouro + ', ' + doacaoSelecionada.numero + ' - ' + doacaoSelecionada.bairro + ', ' + doacaoSelecionada.cidade + '/' + doacaoSelecionada.estado) : 'Localização não informada' }}
+            </span>
+          </div>
+
+          <div class="modal-info-item">
+            <span class="modal-info-label">Descrição</span>
+            <span class="modal-info-value">{{ doacaoSelecionada.doacaodesc || 'Sem descrição.' }}</span>
+          </div>
+        </div>
       </div>
     </div>
   }

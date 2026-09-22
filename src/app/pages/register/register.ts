@@ -61,18 +61,18 @@ function passwordMatchValidator(control: AbstractControl) {
               </div>
               <div class="input-group flex-40">
                 <label>Telefone</label>
-                <input type="tel" formControlName="telefone" placeholder="11 12345-6789">
+                <input type="tel" formControlName="telefone" placeholder="(11) 91234-5678" maxlength="15" (input)="formatarTelefone($event)">
               </div>
             </div>
 
             <div class="form-row">
               <div class="input-group flex-50">
                 <label>CNPJ *</label>
-                <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00">
+                <input type="text" formControlName="cnpj" placeholder="00.000.000/0000-00" maxlength="18" (input)="formatarCNPJ($event)">
               </div>
               <div class="input-group flex-50">
                 <label>CPF *</label>
-                <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+                <input type="text" formControlName="cpf" placeholder="000.000.000-00" maxlength="14" (input)="formatarCPF($event)">
               </div>
             </div>
 
@@ -329,5 +329,55 @@ buscarCep() {
           alert(msg);
         }
       });
+  }
+
+  formatarCPF(event: any) {
+    let v = event.target.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.substring(0, 11);
+    
+    if (v.length > 9) {
+      v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    } else if (v.length > 6) {
+      v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else if (v.length > 3) {
+      v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    }
+    
+    event.target.value = v;
+    this.cadastroForm.get('cpf')?.setValue(v, { emitEvent: false });
+  }
+
+  formatarCNPJ(event: any) {
+    let v = event.target.value.replace(/\D/g, '');
+    if (v.length > 14) v = v.substring(0, 14);
+    
+    if (v.length > 12) {
+      v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{1,2})/, '$1.$2.$3/$4-$5');
+    } else if (v.length > 8) {
+      v = v.replace(/(\d{2})(\d{3})(\d{3})(\d{1,4})/, '$1.$2.$3/$4');
+    } else if (v.length > 5) {
+      v = v.replace(/(\d{2})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    } else if (v.length > 2) {
+      v = v.replace(/(\d{2})(\d{1,3})/, '$1.$2');
+    }
+    
+    event.target.value = v;
+    this.cadastroForm.get('cnpj')?.setValue(v, { emitEvent: false });
+  }
+
+  formatarTelefone(event: any) {
+    let v = event.target.value.replace(/\D/g, '');
+    if (v.length > 11) v = v.substring(0, 11);
+    
+    if (v.length > 10) {
+      v = v.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (v.length > 6) {
+      v = v.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (v.length > 2) {
+      v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+    }
+    
+    event.target.value = v;
+    this.cadastroForm.get('telefone')?.setValue(v, { emitEvent: false });
   }
 }
