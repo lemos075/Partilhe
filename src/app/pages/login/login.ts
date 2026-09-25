@@ -145,6 +145,7 @@ export class Login implements OnInit {
           this.isSubmitting = false;
           if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.setItem('partilhe_user', JSON.stringify(res.usuario));
+            localStorage.setItem('partilhe_token', res.token);
           }
           this.router.navigate(['/userpage']);
         },

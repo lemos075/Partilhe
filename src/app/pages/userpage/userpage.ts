@@ -67,7 +67,7 @@ export class Userpage implements OnInit {
 
   carregarDoacoes() {
     if (!this.usuario) return;
-    this.http.get(`http://localhost:8000/api/doacoes?userid=${this.usuario.id}`).subscribe({
+    this.http.get('http://localhost:8000/api/doacoes').subscribe({
       next: (data: any) => {
         this.minhasDoacoes = data;
       },
@@ -81,7 +81,6 @@ export class Userpage implements OnInit {
     this.carregarStatusSolicitacao(doacao);
     if (this.usuario?.tipo_usuario === 'ONG') {
       const formData = new FormData();
-      formData.append('ong_id', this.usuario.id.toString());
       this.http.post(`http://localhost:8000/api/doacoes/${doacao.iddoacoes}/visualizacoes`, formData).subscribe({
         error: (err) => console.error('Erro ao registrar visualiza??o da doa??o', err)
       });
@@ -92,7 +91,6 @@ export class Userpage implements OnInit {
     if (!this.usuario || this.usuario.tipo_usuario !== 'ONG') return;
     const formData = new FormData();
     formData.append('doacao_id', doacao.iddoacoes.toString());
-    formData.append('ong_id', this.usuario.id.toString());
     this.http.post<any>('http://localhost:8000/api/solicitacoes/status', formData).subscribe({
       next: (status) => this.solicitacaoStatus = status.status,
       error: (err) => console.error('Erro ao carregar status da solicita??o', err)
@@ -150,7 +148,7 @@ export class Userpage implements OnInit {
 
   carregarLocalidadesParceiras() {
     if (!this.usuario) return;
-    this.http.get(`http://localhost:8000/api/localidades-parceiras?produtor_id=${this.usuario.id}`).subscribe({
+    this.http.get('http://localhost:8000/api/localidades-parceiras').subscribe({
       next: (data: any) => this.localidadesParceiras = data,
       error: (err) => console.error('Erro ao carregar localidades parceiras', err)
     });
@@ -163,7 +161,7 @@ export class Userpage implements OnInit {
 
   carregarHistorico() {
     if (!this.usuario) return;
-    this.http.get(`http://localhost:8000/api/doacoes/historico-visualizacoes?ong_id=${this.usuario.id}`).subscribe({
+    this.http.get('http://localhost:8000/api/doacoes/historico-visualizacoes').subscribe({
       next: (data: any) => this.historicoVisualizacoes = data,
       error: (err) => console.error('Erro ao carregar hist?rico de visualiza??es', err)
     });
@@ -171,7 +169,7 @@ export class Userpage implements OnInit {
 
   carregarSolicitacoes() {
     if (!this.usuario) return;
-    this.http.get(`http://localhost:8000/api/solicitacoes?userid=${this.usuario.id}&tipo_usuario=${this.usuario.tipo_usuario}`).subscribe({
+    this.http.get('http://localhost:8000/api/solicitacoes').subscribe({
       next: (data: any) => this.solicitacoes = data,
       error: (err) => console.error('Erro ao carregar solicita??es', err)
     });
@@ -181,7 +179,6 @@ export class Userpage implements OnInit {
     if (!this.usuario || !this.doacaoSelecionada) return;
     const formData = new FormData();
     formData.append('doacao_id', this.doacaoSelecionada.iddoacoes.toString());
-    formData.append('ong_id', this.usuario.id.toString());
     this.http.post('http://localhost:8000/api/solicitacoes', formData).subscribe({
       next: (res: any) => {
         alert(res.mensagem || 'Interesse registrado com sucesso.');
@@ -195,7 +192,6 @@ export class Userpage implements OnInit {
   decidirSolicitacao(solicitacao: any, decisao: 'ACEITA' | 'RECUSADA', motivoRecusa = '') {
     if (!this.usuario) return;
     const formData = new FormData();
-    formData.append('produtor_id', this.usuario.id.toString());
     formData.append('decisao', decisao);
     if (decisao === 'RECUSADA') formData.append('motivo_recusa', motivoRecusa.trim());
     this.http.post(`http://localhost:8000/api/solicitacoes/${solicitacao.id}/decisao`, formData).subscribe({
@@ -224,7 +220,6 @@ export class Userpage implements OnInit {
 
     this.isSubmitting = true;
     const formData = new FormData();
-    formData.append('userid', this.usuario.id.toString());
     formData.append('doacaonome', nome);
     formData.append('doacaodesc', desc);
     formData.append('doacaofoto', this.arquivoSelecionado);
@@ -252,6 +247,7 @@ export class Userpage implements OnInit {
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
           window.localStorage.removeItem('partilhe_user');
+          window.localStorage.removeItem('partilhe_token');
         }
       } catch (e) {
         console.warn('Erro ao limpar localStorage:', e);
